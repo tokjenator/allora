@@ -2,26 +2,21 @@
 
 #include "flashcard_selector.h"
 
-Window *window;
+static Window *main_window;
 
 
-static void on_deck_selected(flashcard_deck_t *deck) {
+static void on_deck_selected(void *ctx, flashcard_deck_t *deck) {
 
 }
 
 void init() {
-  // Create the Window
-  window = window_create();
 
-  // Push to the stack, animated
-  window_stack_push(window, true);
-
-  flashcard_selector_show(window, on_deck_selected);
+    flashcard_selector_show(on_deck_selected);
 }
 
 void deinit() {
-  // Destroy the Window
-  window_destroy(window);
+    // Destroy the Window
+    flashcard_selector_close();
 }
 
 int main() {
