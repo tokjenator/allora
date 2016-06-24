@@ -14,7 +14,7 @@
     "configurable"
   ],
   "appKeys": {
-    "dummy": 0
+    "decks": 0
   },
   "resources": {
     "media": []

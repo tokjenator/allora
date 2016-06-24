@@ -6,12 +6,24 @@
 static Window *flashcard_selector_window;
 static MenuLayer *menu_layer;
 
+// Ugly, pragmatic temporary solution for storing flashcard deck selected callback
+static void (*on_deck_selected)(void *ctx, flashcard_deck_t *deck);
+
 static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *context) {
-    return 3;
+    return 2;
 }
 
 static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *context) {
-    menu_cell_basic_draw(ctx, cell_layer, "Test!", NULL, NULL);
+    switch(cell_index->row) {
+    case 0:
+        menu_cell_basic_draw(ctx, cell_layer, "Circle of Fifths next", NULL, NULL);
+        break;
+    case 1:
+        menu_cell_basic_draw(ctx, cell_layer, "Circle of Fifths previous", NULL, NULL);
+        break;
+    default:
+        break;
+    }
 }
 
 static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
@@ -19,7 +31,9 @@ static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex 
 }
 
 static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
-
+    if(on_deck_selected != NULL) {
+        on_deck_selected(NULL, NULL);
+    }
 }
 
 static void window_load(Window *window) {
@@ -50,6 +64,7 @@ void flashcard_selector_close() {
 }
 
 void flashcard_selector_show(void (*on_selected)(void *ctx, flashcard_deck_t *selected_deck)) {
+    on_deck_selected = on_selected;
     if(flashcard_selector_window == NULL) {
         flashcard_selector_window = window_create();
         window_set_window_handlers(flashcard_selector_window, (WindowHandlers) {
