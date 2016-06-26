@@ -1,0 +1,31 @@
+{
+    "author": "Tokjenator",
+    "dependencies": {},
+    "keywords": [],
+    "name": "allora",
+    "pebble": {
+        "capabilities": [
+            "configurable"
+        ],
+        "displayName": "allora",
+        "enableMultiJS": true,
+        "messageKeys": {
+            "decks": 0
+        },
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk"
+        ],
+        "uuid": "d14129ab-1a1a-47c0-bba0-89b37e9b9ed9",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "0.1.0"
+}
