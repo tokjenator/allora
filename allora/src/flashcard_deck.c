@@ -8,13 +8,34 @@ static Window *flashcard_deck_window;
 static Layer *flashcard_layer;
 
 static char *scale[12] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+static uint8_t background_colors[12] = {
+  0b11110000,  // C
+  0b11010000,  // C#
+  0b11111000,  // D
+  0b11010100,  // D#
+  0b11111100,  // E
+  0b11101100,  // F
+  0b11000100,  // F#
+  0b11001010,  // G
+  0b11000101,  // G#
+  0b11010110,  // A
+  0b11010001,  // A#
+  0b11110011   // B
+};
 
-static void draw_flashcard_front(flashcard_t *flashcard, GContext *ctx, GRect bounds) {
+static uint8_t counter = 0;
+
+static void draw_tone_flashcard_front(uint8_t tone_key, GContext *ctx, GRect bounds) {
     GSize s = bounds.size;
     GPoint p = {.x = (s.w >> 1), .y = (s.h >> 1)};
+    graphics_context_set_fill_color(ctx, (GColor) background_colors[tone_key]);
     graphics_fill_circle(ctx, p, (s.w >> 2));
-    //graphics_context_set_text_color(ctx, (GColor) GColorWhiteARGB8);
-    //graphics_draw_text(ctx, scale[2], NULL, bounds, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+    graphics_context_set_text_color(ctx, (GColor) GColorRedARGB8);
+    graphics_draw_text(ctx, scale[tone_key], fonts_get_system_font(FONT_KEY_GOTHIC_24), bounds, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);    
+}
+
+static void draw_flashcard_front(flashcard_t *flashcard, GContext *ctx, GRect bounds) {
+  
 }
 
 static void draw_flashcard_back(flashcard_t *flashcard, GContext *ctx, GRect bounds) {
@@ -24,10 +45,31 @@ static void draw_flashcard_back(flashcard_t *flashcard, GContext *ctx, GRect bou
 
 static void draw_flashcard_front_layer(struct Layer *layer, GContext *ctx) {
     GRect bounds = layer_get_bounds(layer);
-    draw_flashcard_front(NULL, ctx, bounds);
+    draw_tone_flashcard_front(counter, ctx, bounds);
+}
+
+static void select_single_click_handler(ClickRecognizerRef recognizer, void *context) {
+
+}
+
+static void up_single_click_handler(ClickRecognizerRef recognizer, void *context) {
+    counter = (counter + 1 < 12)? counter + 1 : 0;
+    layer_mark_dirty(flashcard_layer);
+}
+
+static void down_single_click_handler(ClickRecognizerRef recognizer, void *context) {
+    counter = (counter > 0)? counter - 1 : 11;
+    layer_mark_dirty(flashcard_layer);
+}
+
+static void click_config_provider(void *context) {
+  window_single_click_subscribe(BUTTON_ID_SELECT, select_single_click_handler);
+  window_single_click_subscribe(BUTTON_ID_UP, up_single_click_handler);
+  window_single_click_subscribe(BUTTON_ID_DOWN, down_single_click_handler);
 }
 
 static void window_load(Window *window) {
+    window_set_click_config_provider(window, click_config_provider);
     Layer *window_layer = window_get_root_layer(window);
     GRect bounds = layer_get_bounds(window_layer);
 
